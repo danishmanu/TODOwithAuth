@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User'); // Assuming the user model is in a 'models' directory
 
-// Add a new task for a user
+
 router.post('/:userId/add', async (req, res) => {
   const { userId } = req.params;
   const { title } = req.body;
@@ -22,7 +22,7 @@ router.post('/:userId/add', async (req, res) => {
   }
 });
 
-// Mark a task as completed
+
 router.post('/:userId/complete/:taskId', async (req, res) => {
   const { userId, taskId } = req.params;
 

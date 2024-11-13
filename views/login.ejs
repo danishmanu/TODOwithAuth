@@ -3,111 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login to Calio's TODO</title>
+    <title>Calio's TODO List - Login</title>
     <style>
-        /* General body styles */
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        /* Basic Reset */
+        * {
             margin: 0;
-            overflow: hidden;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        /* Container for the content */
-        .login-container {
-            background: #fff;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            text-align: center;
-            max-width: 400px;
-            width: 100%;
-        }
-
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        /* Animated Welcome text */
-        .welcome-message {
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-            display: inline-block;
-            background: linear-gradient(270deg, #ff0080, #ff8c00, #ffed00);
-            background-size: 600% 600%;
-            -webkit-background-clip: text;
-            color: transparent;
-            animation: gradient-shift 6s ease infinite, typing 3s steps(30, end), blink 0.75s step-end infinite;
-            white-space: nowrap;
-            overflow: hidden;
-            border-right: 2px solid;
-        }
-
-        @keyframes typing {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-
-        @keyframes blink {
-            from, to { border-color: transparent; }
-            50% { border-color: #333; }
-        }
-
-        @keyframes gradient-shift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Form styling */
-        form {
+        body {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+        }
+
+        .login-container {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-container h1 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-message {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 1.5rem;
         }
 
         input[type="text"] {
-            padding: 10px;
-            font-size: 1rem;
-            border-radius: 6px;
-            border: 1px solid #ddd;
             width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
         }
 
-        button {
-            padding: 10px;
-            font-size: 1rem;
+        .login-button {
+            width: 100%;
+            padding: 0.75rem;
             background-color: #007bff;
-            color: white;
+            color: #fff;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
+            font-size: 1rem;
             cursor: pointer;
             transition: background-color 0.3s;
         }
 
-        button:hover {
+        .login-button:hover {
             background-color: #0056b3;
         }
 
-        /* Mobile responsiveness */
-        @media (max-width: 600px) {
-            .login-container {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 1.8rem;
-            }
-
-            .welcome-message {
-                font-size: 1.3rem;
-            }
+        .error-message {
+            color: red;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
         }
     </style>
 </head>
@@ -116,34 +81,48 @@
         <div class="welcome-message">Welcome to Calio's TODO list</div>
         <h1>Login</h1>
         <input type="text" name="username" placeholder="Enter your username" id="username" required>
-        <button type="button" onclick="loginPOST()">Login</button>
+        <button type="button" class="login-button" onclick="loginPOST()">Login</button>
+        <div class="error-message" id="errorMessage">Invalid login. Please try again.</div>
     </div>
+    
     <script>
         async function loginPOST() {
-           const username = document.getElementById('username').value;
-           const token = localStorage.getItem("token");
-           console.log(token, 'above log')
-           let response =await fetch('/users/login',{
-            method:"post",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify({
-                username: username,
-                token: token
-            })
+            const username = document.getElementById('username').value;
+            const token = localStorage.getItem("token");
+            const errorMessage = document.getElementById("errorMessage");
 
-           })
-           let data = await response.json();
-           console.log(data)
-           if(data.success&& data.newLoggedUser){
-                localStorage.setItem("token",data.newLoggedUser.token);
-                console.log(localStorage.getItem("token"))
-                window.location.href = data.response;
-           }
-           else if(data.success && data.extingUser){
-            window.location.href = data.response;
-           }
+            console.log("token", token)
+
+            try {
+                let response = await fetch('/users/login', {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ username, token })
+                });
+
+                let data = await response.json();
+
+                console.log(data)
+                if (data.success && data.newUser) {
+                    console.log("new User if worked")
+                    console.log(data.newUser.token, 'new user token')
+                    localStorage.setItem("token", data.newUser.token);
+                    setTimeout(()=>{
+                        
+                    window.location.href = data.response;
+                    }, 5000)
+                } else if (data.success && data.existingUser) {
+                    window.location.href = data.response;
+                } else {
+                    errorMessage.style.display = "block";
+                }
+            } catch (error) {
+                console.error("Login failed:", error);
+                errorMessage.textContent = "An error occurred. Please try again.";
+                errorMessage.style.display = "block";
+            }
         }
     </script>
 </body>

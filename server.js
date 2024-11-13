@@ -10,7 +10,7 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
-const mongoUri = process.env.MONGODB_URI;
+const mongoUri = 'mongodb+srv://mshahilt:UCtudQ5p94lwCqBV@cluster0.p2hiu.mongodb.net/';
 const port = process.env.PORT || 5000;
 
 // Middleware
